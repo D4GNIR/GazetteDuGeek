@@ -1,6 +1,6 @@
 # La Gazette du Geek
 
-Une page web au style journal qui résume les actus **tech, gaming, impression 3D et geek** : la Une, les sujets majeurs, les brèves, et les rumeurs à surveiller. Elle tourne sur le NAS dans Docker et s'ouvre depuis l'écran d'accueil du téléphone, via le VPN.
+Une page web au style journal qui résume les actus **tech, IA, gaming, impression 3D et geek** : la Une, les sujets majeurs, les brèves, et les rumeurs à surveiller. Elle tourne sur le NAS dans Docker et s'ouvre depuis l'écran d'accueil du téléphone, via le VPN.
 
 - Un seul script, `gazette.py`, sans dépendance (Python 3.9 ou plus).
 - Aucun JavaScript dans les pages. Le thème clair ou sombre suit le téléphone, ou peut être forcé avec `GAZETTE_THEME` (voir « Réglages Docker »).
@@ -38,6 +38,8 @@ Chaque édition contient aussi un `edition.json` : nombre de sites, mot d'alerte
 Tout est en haut de `gazette.py`, section **RÉGLAGES** :
 
 - `FEEDS` : la liste des flux (catégorie, nom, langue, URL). Mettre un `#` devant une ligne pour la désactiver.
+- `CATEGORIES` : les catégories affichées (clé, libellé, couleur).
+- `KEYWORD_CATEGORIES` : catégories attribuées par mots-clés du titre (voir « Catégorie IA »).
 - `ALERT_WORDS`, `RUMOR_WORDS` : mots qui envoient un sujet en majeur ou en « à surveiller ». La comparaison se fait sans accents ni majuscules, et `*` accepte n'importe quelle fin de mot.
 - `SYNONYMS`, `STOPWORDS`, `GROUP_*` : réglage du regroupement des titres.
 - `SCORE_*`, `MAJOR_*`, `MINOR_MAX`, `WATCH_MAX` : seuils de classement.
@@ -61,6 +63,18 @@ La traduction automatique (LibreTranslate) et la notification ntfy existent touj
 - Dans « En bref », une brève française est classée comme si elle avait 6 heures de moins.
 - Quand un sujet est couvert en français et en anglais, c'est le titre et le résumé français qui s'affichent. Les sites anglais sont listés dans « Aussi sur ».
 
+### Catégorie IA
+
+Elle est alimentée de deux façons :
+
+- **Des flux dédiés, en français** : ActuIA, et les rubriques IA de Siècle Digital, Les Numériques, Le Monde Informatique et du Journal du Net.
+- **Des mots-clés** : un article des flux **Tech** ou **Geek** passe en **IA** si son titre contient un mot de la liste `KEYWORD_CATEGORIES` (IA, OpenAI, ChatGPT, LLM, chatbot, intelligence artificielle…).
+
+- Les sigles en majuscules ne reconnaissent que les majuscules : « L'IA » et « AI » comptent, mais pas « j'ai » ni « mai ».
+- Certains mots sont volontairement absents. Avec « Copilot », la panne Microsoft 365 partirait en IA. « Claude », « Llama » et « Mistral » seuls sont des prénoms, des animaux ou du vent.
+- Les jeux vidéo et l'impression 3D gardent leur catégorie, même avec « AI » dans le titre.
+- Un sujet regroupant plusieurs articles prend la catégorie de la majorité d'entre eux.
+
 ### Regroupement
 
 Deux titres parlent du même sujet s'ils partagent au moins 2 mots significatifs, représentant au moins la moitié du titre le plus court. Les mots vides sont ignorés et des synonymes FR/EN sont appliqués (`outage` → `panne`, `CEO` → `PDG`…).
@@ -73,7 +87,7 @@ Une deuxième passe rattache ensuite un article isolé à un sujet déjà repris
 |---|---|
 | Fabbaloo | `/feed` répond 403 aux scripts ; `/feed/atom` fonctionne et c'est lui qui est utilisé. |
 | Warhammer Community | 403 sur toutes les adresses testées (protection anti-robots) : **désactivé**. |
-| Les 22 autres | OK au 14/11/2026. Au total, 12 flux français et 11 anglais. |
+| Les 27 autres | OK au 14/11/2026. Au total, 17 flux français et 11 anglais. |
 
 Un flux en erreur n'empêche pas l'édition d'être générée. Il est listé en bas de page.
 

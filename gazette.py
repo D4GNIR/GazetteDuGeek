@@ -43,7 +43,24 @@ CATEGORIES = {
     "gaming": ("Gaming", "#16a34a"),
     "3d": ("Impression 3D", "#ea580c"),
     "geek": ("Geek", "#9333ea"),
+    "ia": ("IA", "#0891b2"),
 }
+
+# Catégories par mots-clés : un article venant d'un flux des catégories listées passe dans la
+# nouvelle catégorie si son TITRE contient un de ces mots. Sans accents ni majuscules, « * » accepte
+# n'importe quelle fin de mot. Exception : les sigles écrits en MAJUSCULES (IA, AI, LLM…) ne
+# reconnaissent que les majuscules, pour que « j'ai » ou « mai » ne deviennent pas de l'IA.
+# Mots volontairement absents : Copilot (la panne Microsoft 365 partirait en IA), Claude, Llama,
+# Mistral seul (prénom, animal, vent).
+KEYWORD_CATEGORIES = [
+    ("ia", ("tech", "geek"), [
+        "IA", "AI", "AGI", "LLM*", "GPT*", "ChatGPT", "OpenAI", "Anthropic", "Gemini", "DeepSeek",
+        "Mistral AI", "Grok", "xAI", "Perplexity", "Midjourney", "Sora", "Sam Altman",
+        "intelligence artificielle", "artificial intelligence", "IA générative", "generative AI",
+        "chatbot*", "agent* IA", "AI agent*", "machine learning", "deep learning",
+        "apprentissage automatique", "réseau* de neurones", "neural network*",
+    ]),
+]
 
 # Flux : (catégorie, nom affiché, langue, URL). Mettre un « # » devant une ligne pour la désactiver.
 # Si un même article apparaît dans deux flux (ex. Hackaday), c'est le premier listé qui gagne.
@@ -76,6 +93,13 @@ FEEDS = [
     # Warhammer Community bloque les scripts (403, protection anti-robots) : désactivé.
     # ("geek", "Warhammer Community", "en", "https://www.warhammer-community.com/feed/"),
     ("geek", "Blender", "en", "https://www.blender.org/feed/"),
+    # IA : flux dédiés en français. Les articles IA des flux Tech et Geek y arrivent aussi par
+    # mots-clés (voir KEYWORD_CATEGORIES).
+    ("ia", "ActuIA", "fr", "https://www.actuia.com/feed/"),
+    ("ia", "Siècle Digital (IA)", "fr", "https://siecledigital.fr/category/intelligence-artificielle/feed/"),
+    ("ia", "Les Numériques (IA)", "fr", "https://www.lesnumeriques.com/intelligence-artificielle/rss.xml"),
+    ("ia", "Le Monde Informatique (IA)", "fr", "https://www.lemondeinformatique.fr/flux-rss/thematique/intelligence-artificielle/rss.xml"),
+    ("ia", "Journal du Net (IA)", "fr", "https://www.journaldunet.com/intelligence-artificielle/rss/"),
 ]
 
 # Fenêtre de récupération (24 h + marge)
@@ -328,6 +352,38 @@ def _compile_words(words):
             parts.append(re.escape(w))
     parts.sort(key=len, reverse=True)
     return re.compile(r"(?<!\w)(?:" + "|".join(parts) + r")(?!\w)")
+
+
+def _compile_acronyms(words):
+    """Sigles en majuscules, sensibles à la casse. « L'IA » et « AI's » sont reconnus, mais pas
+    « J'AI » ni « N'AI » (titres français tout en majuscules)."""
+    parts = sorted((re.escape(w[:-1]) + r"\w*" if w.endswith("*") else re.escape(w)) for w in words)
+    parts.sort(key=len, reverse=True)
+    return re.compile(r"(?<!\w)(?<![JjNn]['’])(?:" + "|".join(parts) + r")(?!\w)")
+
+
+def _compile_rules(rules):
+    compiled = []
+    for cat, sources, words in rules:
+        upper = [w for w in words if w.rstrip("*").isupper()]
+        other = [w for w in words if not w.rstrip("*").isupper()]
+        compiled.append((cat, frozenset(sources), _compile_acronyms(upper) if upper else None,
+                         _compile_words(other) if other else None))
+    return compiled
+
+
+KEYWORD_RULES = _compile_rules(KEYWORD_CATEGORIES)
+
+
+def keyword_category(article):
+    """Catégorie de l'article après application de KEYWORD_CATEGORIES (titre seulement)."""
+    title = article["title"]
+    for cat, sources, acronyms, words in KEYWORD_RULES:
+        if article["cat"] not in sources:
+            continue
+        if (acronyms and acronyms.search(title)) or (words and words.search(normalize(title))):
+            return cat
+    return article["cat"]
 
 
 ALERT_RX = _compile_words(ALERT_WORDS)
@@ -1248,6 +1304,8 @@ def build(now, out_dir, offline_dir=None, feeds=FEEDS):
     log("Gazette du %s : lecture de %d flux…" % (day.isoformat(), len(feeds)))
     articles, status = fetch_all(feeds, offline_dir)
     fresh = recent(articles, now)
+    for a in fresh:
+        a["cat"] = keyword_category(a)
     topics = group(fresh)
     sections = classify(topics)
     stats = {"articles": len(fresh), "topics": len(topics)}

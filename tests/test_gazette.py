@@ -363,6 +363,26 @@ class DailyEditionTests(unittest.TestCase):
             self.assertEqual(calls, [1])
 
 
+class KeywordCategoryTests(unittest.TestCase):
+    def cat(self, title, cat="tech"):
+        return g.keyword_category({"title": title, "cat": cat})
+
+    def test_ai_titles_move_to_ia(self):
+        for title in ["L'IA de Google arrive", "OpenAI lance GPT-6", "The AI's answer", "Les LLMs partout",
+                      "Ce chatbot ment", "Une intelligence artificielle génère des cartes"]:
+            self.assertEqual(self.cat(title), "ia", title)
+        self.assertEqual(self.cat("Des agents IA partout", "geek"), "ia")
+
+    def test_false_positives_stay(self):
+        for title in ["J'ai testé le Pixel", "J'AI TESTÉ LE PIXEL", "Le mois de mai", "Ai Weiwei expose",
+                      "Outage disrupts Outlook, Teams, Copilot", "Via Rail"]:
+            self.assertEqual(self.cat(title), "tech", title)
+
+    def test_other_categories_untouched(self):
+        self.assertEqual(self.cat("The Witcher 3 AI voice", "gaming"), "gaming")
+        self.assertEqual(self.cat("Bambu Lab AI print monitoring", "3d"), "3d")
+
+
 class FrenchFirstTests(unittest.TestCase):
     def test_french_breaks_ties_but_not_more(self):
         fr = g.make_topic([art("Nouvelle console annoncée", "Numerama", lang="fr")])
