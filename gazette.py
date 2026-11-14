@@ -769,6 +769,18 @@ body{margin:0;background:var(--bg);color:var(--ink);
 a{color:inherit;text-decoration:none}
 h3 a,h4 a{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .25s}
 h3 a:hover,h4 a:hover{background-size:100% 1px}
+/* Toute la carte ouvre l'article : le lien du titre est étiré sur la carte (lien « étiré »).
+   Les liens « Aussi sur » restent au-dessus et gardent leur propre destination. */
+.une,.card,.minor li,.watch li{position:relative}
+.une h3 a::after,.card h3 a::after,.minor h4 a::after,.watch h4 a::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.une .meta,.card .meta,.minor .meta,.watch .meta{position:relative;z-index:1}
+.une,.card,.minor li,.watch li{-webkit-tap-highlight-color:transparent;transition:transform .15s,box-shadow .15s,background-color .15s}
+.une:hover h3 a,.card:hover h3 a,.minor li:hover h4 a,.watch li:hover h4 a{background-size:100% 1px}
+.une:active,.card:active{transform:scale(.985)}
+.minor li:active,.watch li:active{background:var(--chip);border-radius:0 8px 8px 0}
+h3 a:focus-visible,h4 a:focus-visible{outline:none}
+h3 a:focus-visible::after,h4 a:focus-visible::after{outline:2px solid var(--accent);outline-offset:2px}
+.meta a{padding:4px 0}
 a:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 .page{max-width:1120px;margin:0 auto;padding-block:18px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .sheet{background:var(--paper);border:1px solid var(--rule);border-radius:18px;padding:22px 32px 30px;box-shadow:var(--shadow)}
