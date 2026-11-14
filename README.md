@@ -155,3 +155,9 @@ Une autre installation, sur un serveur Linux sans Docker (timer systemd, nginx, 
 - Les résumés viennent des flux : certains sont courts, d'autres absents.
 - La page n'est pas mise à jour toute seule si elle reste ouverte : il faut la rouvrir ou toucher Actualiser.
 - Le service est prévu pour un usage personnel, derrière le VPN : il n'a pas de mot de passe.
+
+## Licence
+
+MIT : chacun peut réutiliser, modifier et partager ce code, à condition de garder la mention de copyright et le texte du fichier [LICENSE](LICENSE).
+
+Les articles affichés restent la propriété de leurs sites. La gazette n'en montre que le titre, un court résumé et un lien vers l'article d'origine.
