@@ -1,0 +1,35 @@
+# La Gazette du Geek sur le NAS : docker compose up -d --build
+# Puis ouvrir http://<ip-du-nas>:8642/ depuis le téléphone (réseau local ou VPN).
+services:
+  gazette:
+    build: .
+    image: gazette-du-geek:2
+    pull_policy: build       # reconstruit l'image à chaque déploiement
+    container_name: gazette
+    restart: unless-stopped
+    ports:
+      - "8642:8080"          # ne PAS rediriger ce port sur la box : accès par le VPN seulement
+    volumes:
+      # Volume géré par Docker : les 14 dernières éditions, les icônes et le manifeste.
+      # Pas de problème de droits, et il survit à la suppression du conteneur ou du projet.
+      - gazette-data:/data
+    environment:
+      # Édition automatique chaque jour à cette heure (heure de Paris). Vide = désactivée.
+      # Si le NAS était éteint à cette heure-là, l'édition est faite au redémarrage du conteneur.
+      GAZETTE_DAILY_AT: "06:30"
+      # Actualisation à l'ouverture si la dernière édition a plus de N heures (0 = jamais).
+      GAZETTE_AUTO_REFRESH_HOURS: "0"
+      # Thème : auto (suit le téléphone), dark, light
+      GAZETTE_THEME: "auto"
+    # Durcissement : système de fichiers en lecture seule sauf /data, aucun privilège.
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+
+volumes:
+  gazette-data:

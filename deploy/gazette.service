@@ -1,0 +1,10 @@
+[Unit]
+Description=La Gazette du Geek — génération de l'édition du jour
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=gazette
+ExecStart=/opt/gazette/run.sh
+TimeoutStartSec=300

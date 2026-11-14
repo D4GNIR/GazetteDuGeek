@@ -1,0 +1,16 @@
+# LibreTranslate auto-hébergé, anglais -> français uniquement (modèles légers).
+# Lancer : docker compose -f deploy/libretranslate-compose.yml up -d
+# Premier démarrage : quelques minutes (téléchargement des modèles), ensuite instantané.
+services:
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"   # accessible du serveur seulement
+    environment:
+      - LT_LOAD_ONLY=en,fr
+      - LT_UPDATE_MODELS=true
+    volumes:
+      - lt-models:/home/libretranslate/.local
+volumes:
+  lt-models:

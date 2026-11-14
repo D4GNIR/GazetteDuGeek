@@ -1,0 +1,9 @@
+.env
+.preview/
+__pycache__/
+*.pyc
+.DS_Store
+out/.gazette.lock
+.preview-dark/
+.preview-live/
+data/

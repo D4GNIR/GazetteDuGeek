@@ -1,0 +1,9 @@
+[Unit]
+Description=La Gazette du Geek — chaque jour à 6 h 30 (heure de Paris)
+
+[Timer]
+OnCalendar=*-*-* 06:30:00 Europe/Paris
+Persistent=true
+
+[Install]
+WantedBy=timers.target

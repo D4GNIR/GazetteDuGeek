@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel><title>Numerama</title>
+<item><title>Panne géante de Microsoft : Outlook et Teams inaccessibles</title>
+<link>https://example.org/numerama/panne</link>
+<description><![CDATA[<p>Des millions d'utilisateurs privés de messagerie.&nbsp;<script>alert(1)</script></p><p>The post Panne appeared first on Numerama.</p>]]></description>
+<pubDate>Thu, 12 Nov 2026 20:00:00 +0100</pubDate></item>
+<item><title>Un vieil article</title><link>https://example.org/numerama/vieux</link>
+<pubDate>Mon, 09 Nov 2026 08:00:00 +0100</pubDate></item>
+<item><title>Lien piégé &lt;img src=x onerror=alert(1)&gt;</title><link>javascript:alert(1)</link>
+<description>Texte &amp; contenu</description><pubDate>Fri, 13 Nov 2026 05:00:00 +0100</pubDate></item>
+</channel></rss>

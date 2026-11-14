@@ -1,0 +1,11 @@
+[Unit]
+Description=La Gazette du Geek — service du bouton « Actualiser »
+After=network-online.target
+
+[Service]
+User=gazette
+ExecStart=/opt/gazette/run.sh --serve
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
